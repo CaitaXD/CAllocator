@@ -41,10 +41,15 @@ ALLOCATOR_API void arena_allocator_clear(struct arena_allocator_t *allocator);
 
 #define stack_arena(size__) arena_allocator_init(ARRAY_LITERAL(size__), size__)
 
-#ifdef ALLOCATOR_IMPLEMENTATION
+#ifndef ALLOCATOR_DEFAULT_ALLOC
+#   define ALLOCATOR_DEFAULT_ALLOC(SIZE) malloc(SIZE)
+#endif
 
-#define ALLOCATOR_DEFAULT_ALLOC(SIZE) malloc(SIZE)
-#define ALLOCATOR_DEFAULT_FREE(PTR) free(PTR)
+#ifndef ALLOCATOR_DEFAULT_FREE
+#   define ALLOCATOR_DEFAULT_FREE(PTR) free(PTR)
+#endif
+
+#ifdef ALLOCATOR_IMPLEMENTATION
 
 void *alloc(const struct allocator_t *allocator, const size_t size) {
     if (allocator == NULL || allocator->alloc == NULL) {
